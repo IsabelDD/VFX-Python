@@ -43,5 +43,6 @@ def assemble_tower(name, levels):
 
 
 if __name__ == "__main__":
+	#Create tower. Parameters: name, width/depth, heigth, number_levels
     final_tower = create_tower("test_tower", 20, 10, 10)
     print("Create final tower {0}".format(final_tower))
