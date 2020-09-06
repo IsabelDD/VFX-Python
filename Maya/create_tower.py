@@ -1,3 +1,11 @@
+#Create a tower with input parameters
+#The tower create with a 90% of diference in width and dept between levels but the same heigth
+#
+#Parameters: number of levels (number of levels of the tower, min 3, max 40). Width, Heigth, Depth (w,h,d min of 5 and max of 100)
+#
+#Author: Isabel Diaz Dominguez
+#
+
 import maya.cmds as cmds
 import functools
 
@@ -89,16 +97,57 @@ def createBody(windowID, pWindowTitle, pApplyCallback):
     
     cmds.button( label='Apply', command= functools.partial(pApplyCallback, numberField, widthField, heigthField, depthField))
     
+
+def errorMessage(pWindowTitle, pApplyCallback):
+    
+    windowID = "windowErrorID"
+    
+    if cmds.window(windowID, exists = True):
+        cmds.deleteUI(windowID)
+    
+    cmds.window(windowID, title=pWindowTitle, sizeable=False)
+    cmds.rowColumnLayout(numberOfColumns=1, columnWidth=[(1,200)], columnOffset=[(1, 'right',5)]) 
+    cmds.separator(h=10, style='none')
+    cmds.separator(h=10, style='none')  
+    
+    cmds.text(label="Input values incorrect") 
+    
+    cmds.separator(h=10, style='none')
+    cmds.separator(h=10, style='none')  
+    
+       
+    def cancelCallback ( *pArgs ):
+        if cmds.window (windowID, exists=True):
+            cmds.deleteUI(windowID)
+            
+    cmds.button( label='Accept', command=cancelCallback)
+    
+    cmds.showWindow()
+    
+    
 def applyCallback ( numberField, widthField, heigthField, depthField, *pArgs ):
     
-    number = cmds.intField(numberField, query=True, value=True )
-    width = cmds.intField(widthField, query=True, value=True )
-    heigth = cmds.intField(heigthField, query=True, value=True )
-    depth = cmds.intField(depthField, query=True, value=True )
+    try:
     
-    print ("Tower number levels {0}, width {1}, heigth {2}, depth {3}".format(number, width, heigth, depth))
-    final_tower = create_tower("test_tower", width, heigth, depth, number)
-    print("Create final tower {0}".format(final_tower))
+        number = cmds.intField(numberField, query=True, value=True )
+        width = cmds.intField(widthField, query=True, value=True )
+        heigth = cmds.intField(heigthField, query=True, value=True )
+        depth = cmds.intField(depthField, query=True, value=True )
+        
+        print ("Tower number levels {0}, width {1}, heigth {2}, depth {3}".format(number, width, heigth, depth))
+        
+        if (width or heigth or depth) < 5 :
+             errorMessage('Error', applyCallback)
+        elif (width or heigth or depth) > 100:
+             errorMessage('Error', applyCallback)
+        elif number < 3 or number > 40:
+             errorMessage('Error', applyCallback) 
+        else:
+            final_tower = create_tower("test_tower", width, heigth, depth, number)
+            print("Create final tower {0}".format(final_tower))
+        
+    except:
+        errorMessage('Error', applyCallback)
     
     
     
